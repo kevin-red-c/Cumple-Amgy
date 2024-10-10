@@ -19,5 +19,18 @@
         </a>
     </div>
 
+    <script>
+        const fechaObjetivo = new Date('2025-09-19T00:00:00');
+        const countdownElement = document.getElementById('countdown');
+        const link = document.getElementById('link');
+
+        function actualizarCuentaRegresiva() {
+            const ahora = new Date();
+            const diferencia = fechaObjetivo.getTime() - ahora.getTime();
+        }
+
+        setInterval(actualizarCuentaRegresiva, 1000);
+        actualizarCuentaRegresiva();
+    </script>
 </body>
 </html>
