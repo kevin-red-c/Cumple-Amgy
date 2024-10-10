@@ -20,13 +20,25 @@
     </div>
 
     <script>
-        const fechaObjetivo = new Date('2025-09-19T00:00:00');
+        const fechaObjetivo = new Date('2024-09-19T00:00:00');
         const countdownElement = document.getElementById('countdown');
         const link = document.getElementById('link');
 
         function actualizarCuentaRegresiva() {
             const ahora = new Date();
             const diferencia = fechaObjetivo.getTime() - ahora.getTime();
+
+            if (diferencia <= 0) {
+                link.href = 'gustos.html';
+                countdownElement.textContent = '¡Ya es jueves 19 de septiembre!';
+            } else {
+                const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+                const horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+                const segundos = Math.floor((diferencia % (1000 * 60)) / 1000);
+
+                countdownElement.textContent = `Faltan ${dias} días, ${horas} horas, ${minutos} minutos y ${segundos} segundos`;
+            }
         }
 
         setInterval(actualizarCuentaRegresiva, 1000);
