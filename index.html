@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Ruleta Mágica</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <h1>Ruleta Mágica</h1>
+
+  <div class="formulario">
+    <input type="text" id="opcion" placeholder="Opción">
+    <input type="number" id="porcentaje" placeholder="Porcentaje" min="1" max="100">
+    <button onclick="agregarOpcion()">Agregar</button>
+  </div>
+
+  <div class="formulario">
+    <input type="text" id="nombreRuleta" placeholder="Nombre de la ruleta">
+    <button onclick="guardarRuleta()">Guardar ruleta</button>
+    <button onclick="actualizarRuleta()">Actualizar ruleta</button>
+    <select id="ruletasGuardadas"></select>
+    <button onclick="cargarRuleta()">Cargar ruleta</button>
+    <button onclick="eliminarRuleta()">Eliminar ruleta</button>
+  </div>
+
+  <div id="lista"></div>
+
+  <div class="wheel-container">
+    <canvas id="wheel" width="400" height="400"></canvas>
+    <div id="resplandor"></div>
+    <div id="resultadoVentana">
+      <span id="cerrarResultado" onclick="cerrarResultado()">✖</span>
+      <p id="resultadoTexto"></p>
+    </div>
+  </div>
+
+  <button id="spinBtn" onclick="spinWheel()">Girar</button>
+
+  <div id="historial">
+    <h3>Últimos resultados</h3>
+    <ul id="historialLista"></ul>
+    <button onclick="limpiarHistorial()">Limpiar historial</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
