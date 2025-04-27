@@ -1,0 +1,154 @@
+body {
+  font-family: 'Cinzel', serif;
+  margin: 0;
+  background: linear-gradient(to bottom right, #f0e2c2, #c2a86f);
+  overflow-x: hidden;
+}
+
+.contenedor {
+  display: flex;
+  min-height: 100vh;
+}
+
+.panel-izq, .panel-der {
+  flex: 1;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.panel-izq {
+  max-width: 400px;
+  background: #fff7e6;
+  border-right: 4px solid #5b3924;
+}
+
+.panel-der {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+h1 {
+  font-size: 36px;
+  text-align: center;
+  color: #5b3924;
+  text-shadow: 2px 2px 5px #a1886b;
+}
+
+input, select {
+  width: 90%;
+  padding: 8px;
+  margin: 5px;
+  border: 2px solid #8b5c2d;
+  background: #fff7e6;
+  border-radius: 5px;
+  font-family: 'Cinzel', serif;
+}
+
+button {
+  width: 95%;
+  padding: 10px;
+  margin: 5px;
+  background: #8b5c2d;
+  color: #fff7e6;
+  border: none;
+  border-radius: 5px;
+  font-family: 'Cinzel', serif;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #a17143;
+}
+
+#wheel {
+  background: #fff7e6;
+  border: 12px solid #5b3924;
+  border-radius: 50%;
+  box-shadow: 0px 0px 20px 5px #a1886b;
+  z-index: 2;
+}
+
+#spinBtn {
+  position: absolute;
+  bottom: 30px;
+  z-index: 3;
+  background: #5b3924;
+  font-size: 20px;
+  width: 150px;
+}
+
+#wheel, #particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#particles {
+  width: 500px;
+  height: 500px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+#resplandor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  pointer-events: none;
+  box-shadow: 0 0 0px 0px gold;
+  opacity: 0;
+  transition: opacity 0.5s, box-shadow 0.5s;
+  z-index: 2;
+}
+
+.popup {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -30%);
+  background: rgba(255, 248, 220, 0.95);
+  border: 3px solid #5b3924;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 28px;
+  display: none;
+  z-index: 5;
+  box-shadow: 0px 0px 15px #5b3924;
+}
+
+.popup .close {
+  position: absolute;
+  top: 5px;
+  right: 15px;
+  cursor: pointer;
+  font-size: 30px;
+  color: #5b3924;
+}
+
+#lista div {
+  margin: 5px;
+}
+
+#historial {
+  margin-top: 30px;
+}
+
+#historialLista {
+  list-style: none;
+  padding: 0;
+}
+
+#historialLista li {
+  background: #e6d2b3;
+  margin: 5px auto;
+  padding: 5px;
+  width: 90%;
+  border-radius: 5px;
+}
