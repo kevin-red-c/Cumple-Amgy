@@ -1,10 +1,7 @@
 let opciones = [];
 let colores = [];
-let angulos = [];
 let totalPorcentaje = 0;
 let startAngle = 0;
-let currentAngle = 0;
-let spinning = false;
 let ruletas = JSON.parse(localStorage.getItem('ruletas')) || {};
 let historial = [];
 let opcionesOriginal = [];
@@ -12,12 +9,11 @@ let opcionesOriginal = [];
 const wheel = document.getElementById('wheel');
 const ctx = wheel.getContext('2d');
 
-// CONFIGURACIÓN
 const iconoConfiguracion = document.getElementById('iconoConfiguracion');
 const panelConfiguracion = document.getElementById('panelConfiguracion');
 const modoCondicionado = document.getElementById('modoCondicionado');
 
-// Abrir/cerrar panel de configuración
+// Configuración (abrir/cerrar panel)
 iconoConfiguracion.onclick = () => {
   panelConfiguracion.style.display = panelConfiguracion.style.display === 'block' ? 'none' : 'block';
 };
@@ -31,7 +27,7 @@ function agregarOpcion() {
   if (opcion && porcentaje > 0) {
     opciones.push({ nombre: opcion, porcentaje: porcentaje });
     colores.push(getRandomColor());
-    opcionesOriginal = [...opciones]; // guardar copia inicial
+    opcionesOriginal = [...opciones];
     actualizarLista();
     dibujarRuleta();
     opcionInput.value = '';
@@ -56,87 +52,94 @@ function getRandomColor() {
   return color;
 }
 
-function dibujarRuleta() {
+function dibujarRuleta(rotation = 0) {
   ctx.clearRect(0, 0, wheel.width, wheel.height);
-  totalPorcentaje = opciones.reduce((sum, op) => sum + op.porcentaje, 0);
-  startAngle = 0;
-  angulos = [];
 
-  opciones.forEach((op, index) => {
-    const sliceAngle = (op.porcentaje / totalPorcentaje) * 2 * Math.PI;
+  const total = opciones.reduce((sum, op) => sum + op.porcentaje, 0);
+  let angleStart = rotation;
+  
+  opciones.forEach((op, i) => {
+    const slice = (op.porcentaje / total) * 2 * Math.PI;
     ctx.beginPath();
-    ctx.moveTo(wheel.width/2, wheel.height/2);
-    ctx.arc(wheel.width/2, wheel.height/2, wheel.width/2, startAngle, startAngle + sliceAngle);
-    ctx.fillStyle = colores[index];
+    ctx.moveTo(200, 200);
+    ctx.arc(200, 200, 190, angleStart, angleStart + slice);
+    ctx.closePath();
+    ctx.fillStyle = colores[i];
     ctx.fill();
+    ctx.strokeStyle = "#5b3924";
+    ctx.lineWidth = 2;
     ctx.stroke();
-    angulos.push({ nombre: op.nombre, start: startAngle, end: startAngle + sliceAngle });
-    startAngle += sliceAngle;
+
+    // Texto dentro de cada sección
+    ctx.save();
+    ctx.translate(200, 200);
+    ctx.rotate(angleStart + slice / 2);
+    ctx.textAlign = "right";
+    ctx.fillStyle = "#5b3924";
+    ctx.font = "bold 18px Cinzel";
+    ctx.fillText(op.nombre, 170, 0);
+    ctx.restore();
+
+    angleStart += slice;
   });
 
-  // Flecha arriba
+  // Flecha estática arriba
   ctx.fillStyle = "#5b3924";
   ctx.beginPath();
-  ctx.moveTo(wheel.width/2 - 10, 0);
-  ctx.lineTo(wheel.width/2 + 10, 0);
-  ctx.lineTo(wheel.width/2, 20);
+  ctx.moveTo(195, 10);
+  ctx.lineTo(205, 10);
+  ctx.lineTo(200, 30);
+  ctx.closePath();
   ctx.fill();
 }
 
 function spinWheel() {
-  if (spinning || opciones.length === 0) return;
-  spinning = true;
+  if (opciones.length === 0) return;
+
   const randomAngle = Math.random() * 2 * Math.PI;
-  const extraSpins = 10 * Math.PI;
-  const targetAngle = extraSpins + randomAngle;
+  const spins = 10 * Math.PI;
+  const finalRotation = spins + randomAngle;
   let start = null;
   const duration = 4000;
+  const initialRotation = 0;
 
   function animate(timestamp) {
     if (!start) start = timestamp;
     const elapsed = timestamp - start;
     const progress = Math.min(elapsed / duration, 1);
-    currentAngle = progress * targetAngle;
-    ctx.save();
-    ctx.clearRect(0, 0, wheel.width, wheel.height);
-    ctx.translate(wheel.width/2, wheel.height/2);
-    ctx.rotate(currentAngle);
-    ctx.translate(-wheel.width/2, -wheel.height/2);
-    dibujarRuleta();
-    ctx.restore();
+    const easedProgress = easeOutCubic(progress);
+
+    const currentRotation = initialRotation + finalRotation * easedProgress;
+    dibujarRuleta(currentRotation);
 
     if (progress < 1) {
       requestAnimationFrame(animate);
     } else {
       determinarResultado(randomAngle);
-      spinning = false;
     }
   }
   requestAnimationFrame(animate);
 }
 
+function easeOutCubic(t) {
+  return 1 - Math.pow(1 - t, 3);
+}
+
 function determinarResultado(angle) {
-  const finalAngle = (2 * Math.PI - (angle % (2 * Math.PI))) % (2 * Math.PI);
-  let ganador = '';
+  const total = opciones.reduce((sum, op) => sum + op.porcentaje, 0);
+  let current = 0;
+  const final = (2 * Math.PI - (angle % (2 * Math.PI))) % (2 * Math.PI);
 
-  for (let i = 0; i < angulos.length; i++) {
-    if (finalAngle >= angulos[i].start && finalAngle <= angulos[i].end) {
-      ganador = angulos[i].nombre;
-      break;
+  for (let i = 0; i < opciones.length; i++) {
+    current += (opciones[i].porcentaje / total) * 2 * Math.PI;
+    if (final < current) {
+      mostrarResultado(opciones[i].nombre, i);
+      return;
     }
-  }
-
-  mostrarResultado(ganador);
-
-  if (modoCondicionado.checked) {
-    opciones = opciones.filter(op => op.nombre !== ganador);
-    colores.splice(i, 1);
-    dibujarRuleta();
-    actualizarLista();
   }
 }
 
-function mostrarResultado(nombre) {
+function mostrarResultado(nombre, indexGanador) {
   const resultadoVentana = document.getElementById('resultadoVentana');
   const resultadoTexto = document.getElementById('resultadoTexto');
   resultadoTexto.innerText = `¡Salió: ${nombre}!`;
@@ -144,15 +147,22 @@ function mostrarResultado(nombre) {
 
   const resplandor = document.getElementById('resplandor');
   resplandor.style.opacity = 1;
-  resplandor.style.boxShadow = "0 0 60px 30px gold";
+  resplandor.style.boxShadow = "0 0 100px 50px gold";
   setTimeout(() => {
     resplandor.style.opacity = 0;
     resplandor.style.boxShadow = "0 0 0px 0px gold";
-  }, 1000);
+  }, 1500);
 
   historial.unshift(nombre);
   if (historial.length > 10) historial.pop();
   actualizarHistorial();
+
+  if (modoCondicionado.checked) {
+    opciones.splice(indexGanador, 1);
+    colores.splice(indexGanador, 1);
+    dibujarRuleta();
+    actualizarLista();
+  }
 }
 
 function cerrarResultado() {
@@ -187,4 +197,5 @@ document.getElementById('porcentaje').addEventListener('keydown', (e) => {
   if (e.key === "Enter") agregarOpcion();
 });
 
+// Iniciar
 dibujarRuleta();
